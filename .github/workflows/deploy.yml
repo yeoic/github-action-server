@@ -17,18 +17,8 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
           script: |
-            # Check if the directory exists
-            if [ ! -d "/home/ubuntu/github-action-server" ]; then
-              # If not, clone the repository
-              git clone https://github.com/yeoic/github-action-server.git /home/ubuntu/github-action-server
-            else
-              # If it exists, pull the latest changes
-              cd /home/ubuntu/github-action-server
-              git pull origin main
-            fi
-            
-            # Continue with the build and deployment process
             cd /home/ubuntu/github-action-server
+            git pull origin main
             ./gradlew clean build
             sudo fuser -k -n tcp 8080 || true
             nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &
