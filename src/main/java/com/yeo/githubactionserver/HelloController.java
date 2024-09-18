@@ -8,6 +8,6 @@ public class HelloController {
 
     @GetMapping("/")
     public String hello() {
-        return "ECR 배포 방식이 적용되었는지 Test world";
+        return "ECR > 코드 디플로이 Test world";
     }
 }
