@@ -48,8 +48,41 @@ jobs:
       - name: 빌드된 파일 이름 변경하기
         run: mv ./build/libs/*SNAPSHOT.jar ./project.jar
 
+      - name: 파일 존재 확인
+        run: |
+          ls -l
+          ls -l scripts || echo "scripts 디렉토리가 없습니다"
+          ls -l project.jar || echo "project.jar 파일이 없습니다"
+          ls -l appspec.yml || echo "appspec.yml 파일이 없습니다"
+
+      - name: scripts 디렉토리 생성
+        run: mkdir -p scripts
+
+      - name: appspec.yml 확인 및 생성
+        run: |
+          if [ ! -f appspec.yml ]; then
+            echo "appspec.yml 파일이 없습니다. 기본 내용으로 생성합니다."
+            echo "version: 0.0
+          OS: linux
+          files:
+            - source: /
+              destination: /home/ubuntu/app" > appspec.yml
+          fi
+          cat appspec.yml
+
       - name: 압축하기
-        run: tar -czvf $GITHUB_SHA.tar.gz project.jar appspec.yml scripts
+        run: |
+          files_to_compress=""
+          [ -f project.jar ] && files_to_compress="$files_to_compress project.jar"
+          [ -f appspec.yml ] && files_to_compress="$files_to_compress appspec.yml"
+          [ -d scripts ] && files_to_compress="$files_to_compress scripts"
+          
+          if [ -n "$files_to_compress" ]; then
+            tar -czvf $GITHUB_SHA.tar.gz $files_to_compress
+          else
+            echo "압축할 파일이 없습니다."
+            exit 1
+          fi
 
       - name: AWS Resource에 접근할 수 있게 AWS credentials 설정
         uses: aws-actions/configure-aws-credentials@v4
