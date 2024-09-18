@@ -42,9 +42,6 @@ jobs:
           ls -la ./src/main/resources/
           cat ./src/main/resources/application.yml
 
-      - name: 프로젝트 폴더 구조 준비
-        run: mkdir -p /home/ubuntu/github-action-server
-
       - name: Docker 이미지 생성
         run: docker build -t github-action-server .
 
