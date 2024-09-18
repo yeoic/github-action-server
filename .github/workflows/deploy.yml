@@ -18,29 +18,22 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: 디렉토리 구조 확인 및 생성
-        run: |
-          pwd
-          ls -R
-          mkdir -p ./src/main/resources
+      - name: 프로젝트 빌드
+        run: ./gradlew clean build
 
-      - name: 권한 설정
-        run: chmod -R 755 ./src
+      - name: 빌드 후 .jar 파일 확인
+        run: ls -la ./build/libs/
 
-      - name: application.yml 파일 만들기
-        run: |
-          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.yml
-          if [ $? -ne 0 ]; then
-            echo "파일 생성 실패"
-            exit 1
-          fi
-          echo "파일 생성 성공"
-          cat ./src/main/resources/application.yml
+      - name: AWS Resource에 접근할 수 있게 AWS credentials 설정
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-northeast-2
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: 파일 생성 확인
-        run: |
-          ls -la ./src/main/resources/
-          cat ./src/main/resources/application.yml
+      - name: ECR에 로그인하기
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Docker 이미지 생성
         run: docker build -t github-action-server .
