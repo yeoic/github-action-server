@@ -3,8 +3,14 @@ os: linux
 files:
   - source: /
     destination: /home/ubuntu/github-action-server
+
+permissions:
+  - object: /
+    owner: ubuntu
+    group: ubuntu
+
 hooks:
   ApplicationStart:
     - location: scripts/start-server.sh
-      timeout: 300
-      runas: root
+      timeout: 60
+      runas: ubuntu
