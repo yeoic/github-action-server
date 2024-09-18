@@ -1,9 +1,8 @@
 #!/bin/bash
 
-echo "--------------- 서버 배포 시작 ------------------"
-mkdir -p /home/ubuntu/github-action-server
-cd /home/ubuntu/github-action-server
-sudo fuser -k -n tcp 8080 || true
-JAR_FILE=$(ls *.jar)
-nohup java -jar $JAR_FILE > ./output.log 2>&1 &
-echo "--------------- 서버 배포 끝 ------------------"
+echo "--------------- 서버 배포 시작 -----------------"
+docker stop github-action-server || true
+docker rm github-action-server || true
+docker pull 974087063717.dkr.ecr.ap-northeast-2.amazonaws.com/github-action-server/github-action-server:latest
+docker run -d --name github-action-server -p 8080:8080 974087063717.dkr.ecr.ap-northeast-2.amazonaws.com/github-action-server/github-action-server:latest
+echo "--------------- 서버 배포 끝 -----------------"
